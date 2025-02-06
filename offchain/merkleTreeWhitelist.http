@@ -1,0 +1,416 @@
+############ VARIABLES
+
+######### URLs
+
+@apiUrl = {{API_URL}}
+@apiPathPrefix =
+@iamUrl = {{IAM_URL}}
+
+######### Admin Client
+
+@adminClientId = {{ADMIN_CLIENT_ID}}
+@adminClientRedirectUrl = {{ADMIN_CLIENT_REDIRECT_URL}}
+@adminClientScope = {{ADMIN_CLIENT_SCOPE}}
+@adminClientUrl = {{ADMIN_CLIENT_URL}}
+@adminLoginRequestState = {{$guid}}
+
+######### User Client
+
+@userClientId = {{USER_CLIENT_ID}}
+@userClientRedirectUrl = {{USER_CLIENT_REDIRECT_URL}}
+@userClientScope = {{USER_CLIENT_SCOPE}}
+@userClientUrl = {{USER_CLIENT_URL}}
+@userLoginRequestState = {{$guid}}
+
+######### OAuth2 Endpoints
+
+@oauth2AuthorizationEndpoint = {{iamUrl}}/oauth2/authorize
+@oauth2LogoutEndpoint = {{iamUrl}}/logout
+@oauth2TokenEndpoint = {{iamUrl}}/oauth2/token
+
+######### Access Tokens
+
+@adminAccessToken = {{GetTokenForAdminPortal.response.body.access_token}}
+@userAccessToken = {{GetTokenForUserPortal.response.body.access_token}}
+
+######### Refresh Tokens
+
+@adminRefreshToken = {{GetTokenForAdminPortal.response.body.refresh_token}}
+@userRefreshToken = {{GetTokenForUserPortal.response.body.refresh_token}}
+
+######### Whitelist Parameters
+
+@pageSize1000 = 1000
+@pageSize2 = 2
+@whitelistBase64Content = V2hpdGVsaXN0QWRkcmVzcyxXaGl0ZWxpc3RBbW91bnQKMHhkMzFGRTQ1RjIxOTk2M0Y1OEE3QjM4MGRBNzEwNjQ2ODU4RjQ4MDMxLDY2NjYuNjcKMHg5RjJlM2ZjODMwNzdkMDQyZjlDQjhDZThjZDc4ZjllRDAzMWVCYTE2LDEyNTAKMHg5ODMzQjg0NjYyOEQxNzQ5MjFEODEyNTVkNmJlMDE2MTU3NDQ3Y0FFLDUzMjI4LjA1MTQ4NjE1MjM5OTAzMDM4OQoweEUxRjNFZjY3MzU1ZDgxODg1QTU1QzIyZjNFQ2ZhMjgyNmExQzFCM2QsMTI1MC4wMAoweGJCMDg2NzhERjhlMDgwOGJhMTdiODgwOTc4QzRBZjZlNmVFZTY3MjIsMTYwMjMuOTE2NjY2NjY2NjY2NjY2NjY3Cg==
+@whitelistAddress = 0x9833B846628D174921D81255d6be016157447cAE
+@whitelistName = whitelist-000
+
+###
+
+@merkleRootsStartingToken = {{GetMerkleRootsPage1AsAdminSuccess.response.body.data.LastEvaluatedKey}}
+@merkleTreesStartingToken = {{GetMerkleTreesPage1AsAnonymousSuccess.response.body.data.LastEvaluatedKey}}
+
+############ OAUTH 2 AUTHORIZATION
+
+######### Admin Portal
+
+# @name LoginForAdminPortal
+GET {{oauth2AuthorizationEndpoint}}?client_id={{adminClientId}}&response_type=code&redirect_uri={{adminClientRedirectUrl}}&scope={{adminClientScope}}&state={{adminLoginRequestState}}&nonce={{$guid}}&code_challenge_method=S256&code_challenge=
+
+###
+
+# @name LogoutForAdminPortal
+GET {{oauth2LogoutEndpoint}}?client_id={{adminClientId}}&logout_uri={{adminClientRedirectUrl}}
+
+###
+
+# @name GetTokenForAdminPortal
+POST {{oauth2TokenEndpoint}}
+Content-Type: application/x-www-form-urlencoded
+Origin: {{adminClientUrl}}
+
+grant_type=authorization_code
+&client_id={{adminClientId}}
+&redirect_uri={{adminClientRedirectUrl}}
+&scope={{adminClientScope}}
+&code=
+&code_verifier=
+
+###
+
+# @name RefreshTokenForAdminPortal
+POST {{oauth2TokenEndpoint}}
+Content-Type: application/x-www-form-urlencoded
+Origin: {{adminClientUrl}}
+
+grant_type=refresh_token
+&client_id={{adminClientId}}
+&refresh_token={{adminRefreshToken}}
+
+######### User Portal
+
+# @name LoginForUserPortal
+GET {{oauth2AuthorizationEndpoint}}?client_id={{userClientId}}&response_type=code&redirect_uri={{userClientRedirectUrl}}&scope={{userClientScope}}&state={{userLoginRequestState}}&nonce={{$guid}}&code_challenge_method=S256&code_challenge=
+
+###
+
+# @name LogoutForUserPortal
+GET {{oauth2LogoutEndpoint}}?client_id={{userClientId}}&logout_uri={{userClientRedirectUrl}}
+
+###
+
+# @name GetTokenForUserPortal
+POST {{oauth2TokenEndpoint}}
+Content-Type: application/x-www-form-urlencoded
+Origin: {{userClientUrl}}
+
+grant_type=authorization_code
+&client_id={{userClientId}}
+&redirect_uri={{userClientRedirectUrl}}
+&scope={{userClientScope}}
+&code=
+&code_verifier=
+
+###
+
+# @name RefreshTokenForUserPortal
+POST {{oauth2TokenEndpoint}}
+Content-Type: application/x-www-form-urlencoded
+Origin: {{userClientUrl}}
+
+grant_type=refresh_token
+&client_id={{userClientId}}
+&refresh_token={{userRefreshToken}}
+
+############ APIs
+
+######### Whitelist
+
+###### Upload Whitelist
+
+# @name UploadWhitelistAsAnonymousUnauthorized
+POST {{apiUrl}}{{apiPathPrefix}}/UploadWhitelist
+Content-Type: application/json
+
+{
+  "whitelistName": "{{whitelistName}}",
+  "whitelistBase64Content": "{{whitelistBase64Content}}"
+}
+
+###
+
+# @name UploadWhitelistAsAdminSuccess
+POST {{apiUrl}}{{apiPathPrefix}}/UploadWhitelist
+Content-Type: application/json
+Authorization: Bearer {{adminAccessToken}}
+
+{
+  "whitelistName": "{{whitelistName}}",
+  "whitelistBase64Content": "{{whitelistBase64Content}}"
+}
+
+###
+
+# @name UploadWhitelistAsUserForbidden
+POST {{apiUrl}}{{apiPathPrefix}}/UploadWhitelist
+Content-Type: application/json
+Authorization: Bearer {{userAccessToken}}
+
+{
+  "whitelistName": "{{whitelistName}}",
+  "whitelistBase64Content": "{{whitelistBase64Content}}"
+}
+
+###### Delete Whitelist
+
+# @name DeleteWhitelistAsAnonymousUnauthorized
+DELETE {{apiUrl}}{{apiPathPrefix}}/Whitelist
+Content-Type: application/json
+
+{
+  "whitelistName": "{{whitelistName}}"
+}
+
+###
+
+# @name DeleteWhitelistAsAdminSuccess
+DELETE {{apiUrl}}{{apiPathPrefix}}/Whitelist
+Content-Type: application/json
+Authorization: Bearer {{adminAccessToken}}
+
+{
+  "whitelistName": "{{whitelistName}}"
+}
+
+###
+
+# @name DeleteWhitelistAsUserForbidden
+DELETE {{apiUrl}}{{apiPathPrefix}}/Whitelist
+Content-Type: application/json
+Authorization: Bearer {{userAccessToken}}
+
+{
+  "whitelistName": "{{whitelistName}}"
+}
+
+######### Merkle Tree
+
+###### Create Merkle Tree
+
+# @name CreateMerkleTreeAsAnonymousUnauthorized
+POST {{apiUrl}}{{apiPathPrefix}}/CreateMerkleTree
+Content-Type: application/json
+
+{
+  "whitelistName": "{{whitelistName}}"
+}
+
+###
+
+# @name CreateMerkleTreeAsAdminSuccess
+POST {{apiUrl}}{{apiPathPrefix}}/CreateMerkleTree
+Content-Type: application/json
+Authorization: Bearer {{adminAccessToken}}
+
+{
+  "whitelistName": "{{whitelistName}}"
+}
+
+###
+
+# @name CreateMerkleTreeAsUserForbidden
+POST {{apiUrl}}{{apiPathPrefix}}/CreateMerkleTree
+Content-Type: application/json
+Authorization: Bearer {{userAccessToken}}
+
+{
+  "whitelistName": "{{whitelistName}}"
+}
+
+###### Get Merkle Trees with 1000 Page Size
+
+# @name GetMerkleTreesAsAnonymousSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleTrees?pageSize={{pageSize1000}}
+
+###
+
+# @name GetMerkleTreesAsAdminSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleTrees?pageSize={{pageSize1000}}
+Authorization: Bearer {{adminAccessToken}}
+
+###
+
+# @name GetMerkleTreesAsUserSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleTrees?pageSize={{pageSize1000}}
+Authorization: Bearer {{userAccessToken}}
+
+###### Get Merkle Trees Page 1
+
+# @name GetMerkleTreesPage1AsAnonymousSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleTrees?pageSize={{pageSize2}}
+
+###
+
+# @name GetMerkleTreesPage1AsAdminSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleTrees?pageSize={{pageSize2}}
+Authorization: Bearer {{adminAccessToken}}
+
+###
+
+# @name GetMerkleTreesPage1AsUserSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleTrees?pageSize={{pageSize2}}
+Authorization: Bearer {{userAccessToken}}
+
+###### Get Merkle Trees Page 2
+
+# @name GetMerkleTreesPage2AsAnonymousSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleTrees?pageSize={{pageSize2}}&startingToken={{merkleTreesStartingToken}}
+
+###
+
+# @name GetMerkleTreesPage2AsAdminSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleTrees?pageSize={{pageSize2}}&startingToken={{merkleTreesStartingToken}}
+Authorization: Bearer {{adminAccessToken}}
+
+###
+
+# @name GetMerkleTreesPage2AsUserSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleTrees?pageSize={{pageSize2}}&startingToken={{merkleTreesStartingToken}}
+Authorization: Bearer {{userAccessToken}}
+
+###### Get Merkle Root
+
+# @name GetMerkleRootAsAnonymousUnauthorized
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoot?whitelistName={{{{whitelistName}}}}
+
+###
+
+# @name GetMerkleRootAsAdminSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoot?whitelistName={{whitelistName}}
+Authorization: Bearer {{adminAccessToken}}
+
+###
+
+# @name GetMerkleRootAsUserForbidden
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoot?whitelistName={{whitelistName}}
+Authorization: Bearer {{userAccessToken}}
+
+###### Get Merkle Roots with 1000 Page Size
+
+# @name GetMerkleRootsAsAnonymousUnauthorized
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoots?pageSize={{pageSize1000}}
+
+###
+
+# @name GetMerkleRootsAsAdminSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoots?pageSize={{pageSize1000}}
+Authorization: Bearer {{adminAccessToken}}
+
+###
+
+# @name GetMerkleRootsAsUserForbidden
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoots?pageSize={{pageSize1000}}
+Authorization: Bearer {{userAccessToken}}
+
+###### Get Merkle Roots Page 1
+
+# @name GetMerkleRootsPage1AsAnonymousUnauthorized
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoots?pageSize={{pageSize2}}
+
+###
+
+# @name GetMerkleRootsPage1AsAdminSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoots?pageSize={{pageSize2}}
+Authorization: Bearer {{adminAccessToken}}
+
+###
+
+# @name GetMerkleRootsPage1AsUserForbidden
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoots?pageSize={{pageSize2}}
+Authorization: Bearer {{userAccessToken}}
+
+###### Get Merkle Roots Page 2
+
+# @name GetMerkleRootsPage2AsAnonymousUnauthorized
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoots?pageSize={{pageSize2}}&startingToken={{merkleRootsStartingToken}}
+
+###
+
+# @name GetMerkleRootsPage2AsAdminSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoots?pageSize={{pageSize2}}&startingToken={{merkleRootsStartingToken}}
+Authorization: Bearer {{adminAccessToken}}
+
+###
+
+# @name GetMerkleRootsPage2AsUserForbidden
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleRoots?pageSize={{pageSize2}}&startingToken={{merkleRootsStartingToken}}
+Authorization: Bearer {{userAccessToken}}
+
+###### Get Merkle Proof
+
+# @name GetMerkleProofAsAnonymousSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleProof?whitelistName={{whitelistName}}&whitelistAddress={{whitelistAddress}}
+
+###
+
+# @name GetMerkleProofAsAdminSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleProof?whitelistName={{whitelistName}}&whitelistAddress={{whitelistAddress}}
+Authorization: Bearer {{adminAccessToken}}
+
+###
+
+# @name GetMerkleProofAsUserSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleProof?whitelistName={{whitelistName}}&whitelistAddress={{whitelistAddress}}
+Authorization: Bearer {{userAccessToken}}
+
+###### Get Merkle Proofs
+
+# @name GetMerkleProofsAsAnonymousUnauthorized
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleProofs?whitelistName={{whitelistName}}
+
+###
+
+# @name GetMerkleProofsAsAdminSuccess
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleProofs?whitelistName={{whitelistName}}
+Authorization: Bearer {{adminAccessToken}}
+
+###
+
+# @name GetMerkleProofsAsUserForbidden
+GET {{apiUrl}}{{apiPathPrefix}}/MerkleProofs?whitelistName={{whitelistName}}
+Authorization: Bearer {{userAccessToken}}
+
+###### Delete Merkle Tree
+
+# @name DeleteMerkleTreeAsAnonymousUnauthorized
+DELETE {{apiUrl}}{{apiPathPrefix}}/MerkleTree
+Content-Type: application/json
+
+{
+  "whitelistName": "{{whitelistName}}"
+}
+
+###
+
+# @name DeleteMerkleTreeAsAdminSuccess
+DELETE {{apiUrl}}{{apiPathPrefix}}/MerkleTree
+Content-Type: application/json
+Authorization: Bearer {{adminAccessToken}}
+
+{
+  "whitelistName": "{{whitelistName}}"
+}
+
+###
+
+# @name DeleteMerkleTreeAsUserForbidden
+DELETE {{apiUrl}}{{apiPathPrefix}}/MerkleTree
+Content-Type: application/json
+Authorization: Bearer {{userAccessToken}}
+
+{
+  "whitelistName": "{{whitelistName}}"
+}
+
+###

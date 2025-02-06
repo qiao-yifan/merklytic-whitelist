@@ -1,0 +1,22 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // https://code.visualstudio.com/docs/languages/overview#_can-i-map-additional-file-extensions-to-a-language
+  "files.associations": {
+    "**/.vscode/cspell.json": "jsonc"
+  },
+  "rest-client.environmentVariables": {
+    "Development": {
+      "API_URL": "http://localhost:5000",
+      "IAM_URL": "https://wl-signin.example.com",
+      "ADMIN_CLIENT_ID": "",
+      "ADMIN_CLIENT_REDIRECT_URL": "http://localhost:3000/login",
+      "ADMIN_CLIENT_SCOPE": "openid profile email wl-rest/adm.c wl-rest/adm.r wl-rest/adm.u wl-rest/adm.d",
+      "ADMIN_CLIENT_URL": "http://localhost:3000",
+      "USER_CLIENT_ID": "",
+      "USER_CLIENT_REDIRECT_URL": "http://localhost:3000/login",
+      "USER_CLIENT_SCOPE": "openid profile email",
+      "USER_CLIENT_URL": "http://localhost:3000"
+    }
+  }
+}

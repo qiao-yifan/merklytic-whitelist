@@ -1,0 +1,22 @@
+{
+  // https://github.com/streetsidesoftware/vscode-spell-checker/blob/master/packages/client/README.md#cspelljson
+  "version": "0.2",
+  "words": [
+    //
+    "dbaeumer",
+    "devcontainers",
+    "esbenp",
+    "humao",
+    "merkle",
+    "mrap",
+    "nvme",
+    "postbuild",
+    "powertools",
+    "runlocal",
+    "sthree",
+    "valibot",
+    "valierror",
+    "webapi"
+  ],
+  "ignorePaths": ["/.vscode/cspell.json", "/package-lock.json"]
+}

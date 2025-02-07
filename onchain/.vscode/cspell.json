@@ -1,0 +1,37 @@
+{
+  // https://github.com/streetsidesoftware/vscode-spell-checker/blob/master/packages/client/README.md#cspelljson
+  "version": "0.2",
+  "words": [
+    //
+    "basescan",
+    "blockscout",
+    "bscscan",
+    "dbaeumer",
+    "devcontainer",
+    "devcontainers",
+    "ensurepath",
+    "esbenp",
+    "hbenl",
+    "keccak",
+    "merkle",
+    "merklytic",
+    "mixedcase",
+    "mtwl",
+    "nodenext",
+    "nomicfoundation",
+    "nomiclabs",
+    "noninteractive",
+    "pipx",
+    "polygonscan",
+    "precoverage",
+    "qiao",
+    "sepolia",
+    "solhint",
+    "sourcify",
+    "tintinweb",
+    "tseslint",
+    "typechain",
+    "yifan"
+  ],
+  "ignorePaths": ["/.vscode/cspell.json", "/package-lock.json"]
+}

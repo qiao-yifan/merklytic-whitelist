@@ -25,3 +25,21 @@ MSBuild_Logs
 
 # MacOS
 .DS_Store
+
+# Hardhat files
+cache/
+artifacts/
+
+# TypeChain files
+typechain/
+typechain-types/
+
+# solidity-coverage files
+coverage/
+coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
+
+# Gas reporter files
+gas-reporter-output.txt
